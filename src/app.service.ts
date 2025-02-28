@@ -93,16 +93,16 @@ export class AppService {
   async sendEmailTest(str: string) {
 
     try {
-      console.log("primeiro estágio")
+      //console.log("primeiro estágio")
       const html = generateEmailTest(str)
-      console.log("segundo estágio", transporter)
+      //console.log("segundo estágio", transporter)
       const sendEmail = await transporter.sendMail({
         from: `'FlixNext'<${process.env.EMAIL_USER}>`,
         to: "ericssongomes.fotografia@gmail.com",
         subject: "Email Teste",
         html: html
       })
-      console.log("terceiro estágio")
+      //console.log("terceiro estágio")
       return sendEmail
     } catch (err) {
       throw new Error(`Erro ao enviar email teste: ${err}`)

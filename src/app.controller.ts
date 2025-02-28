@@ -30,7 +30,6 @@ export class AppController {
 
   @Post('/email/test')
   async sendEmailTeste(@Body() obj: { str: string }) {
-    console.log(obj)
     return this.appService.sendEmailTest(obj.str)
   }
 }
