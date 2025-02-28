@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model favorito {
+  id         String   @id
+  title      String
+  subtitle   String?
+  userId     String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  tmdbid     Int
+  user       user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model movies {
+  id          String   @id
+  title       String
+  src         String
+  background  String
+  overlay     String
+  description String
+  duration    String
+  genero      String[]
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+  subtitle    String?
+}
+
+model subscription {
+  id     String @id
+  userId String @unique
+  subId  Int
+  status String
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user {
+  id               String        @id
+  name             String
+  email            String        @unique
+  birthday         DateTime
+  password         String
+  donator          Boolean       @default(false)
+  avatar           String?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @default(now())
+  verified         Boolean       @default(false)
+  resetToken       String?
+  resetTokenExpire DateTime?
+  news             Boolean       @default(true)
+  access           Boolean       @default(false)
+  favorito         favorito[]
+  subscription     subscription?
+  watchLater       watchLater[]
+}
+
+model watchLater {
+  id         String   @id
+  title      String
+  subtitle   String
+  userId     String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  tmdbid     Int
+  user       user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
