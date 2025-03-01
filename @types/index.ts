@@ -14,6 +14,14 @@ export interface ProblemTemplateProps {
     userId: string
 }
 
+export interface RequestProps {
+    tmdbId: number,
+    title: string,
+    subtitle: string,
+    userId: string,
+    userName: string
+}
+
 
 export interface UsersProps {
     id: string,
@@ -22,4 +30,10 @@ export interface UsersProps {
     birthday: string,
     news: boolean,
     verified: boolean,
+}
+
+export interface RecoverProps {
+    userName: string,
+    userEmail: string,
+    token: string
 }

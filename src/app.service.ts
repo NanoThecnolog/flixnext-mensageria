@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NewAccountProps, ProblemTemplateProps } from '@types';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { NewAccountProps, ProblemTemplateProps, RecoverProps, RequestProps } from '@types';
 import { createTransporter } from 'util/CreateTransporter';
-import { generateEmailTest, generateNewAccNotificationContent, generateProblemTemplate, generatePromotionalTemplate } from 'util/GenerateEmailTemplates';
+import { generateEmailTest, generateNewAccNotificationContent, generateProblemTemplate, generatePromotionalTemplate, generateRecoverTemplate, generateRequestTemplate } from 'util/GenerateEmailTemplates';
 import { getAllUsers } from 'util/GetDB';
 
 
@@ -17,6 +18,23 @@ export class AppService {
       status: "Ativo",
       message: 'Mensageria rodando!'
     };
+  }
+  async sendEmailTest(str: string) {
+    try {
+      //console.log("primeiro estágio")
+      const html = generateEmailTest(str)
+      //console.log("segundo estágio", transporter)
+      const sendEmail = await transporter.sendMail({
+        from: `'FlixNext'<${process.env.EMAIL_USER}>`,
+        to: "ericssongomes.fotografia@gmail.com",
+        subject: "Email Teste",
+        html: html
+      })
+      //console.log("terceiro estágio")
+      return sendEmail
+    } catch (err) {
+      throw new Error(`Erro ao enviar email teste: ${err}`)
+    }
   }
   async sendNewAccountNotification({ name, email, birthday, password }: NewAccountProps) {
     try {
@@ -90,22 +108,38 @@ export class AppService {
     }
   }
 
-  async sendEmailTest(str: string) {
-
+  async sendRequestEmail(data: RequestProps) {
+    const prisma = new PrismaClient()
+    const userExiste = await prisma.user.findUnique({
+      where: { id: data.userId }
+    })
+    if (!userExiste) throw new Error("Usuário não existe!")
     try {
-      //console.log("primeiro estágio")
-      const html = generateEmailTest(str)
-      //console.log("segundo estágio", transporter)
-      const sendEmail = await transporter.sendMail({
+      const html = generateRequestTemplate(data)
+      const send = await transporter.sendMail({
         from: `'FlixNext'<${process.env.EMAIL_USER}>`,
-        to: "ericssongomes.fotografia@gmail.com",
-        subject: "Email Teste",
-        html: html
+        to: 'ericssongomes.fotografia@gmail.com',
+        subject: 'Solicitação de Conteúdo',
+        html
       })
-      //console.log("terceiro estágio")
-      return sendEmail
+      return send
     } catch (err) {
-      throw new Error(`Erro ao enviar email teste: ${err}`)
+      throw new Error("Erro ao enviar email de Solicitação de conteúdo")
+    }
+  }
+
+  async sendRecoverEmail(data: RecoverProps) {
+    try {
+      const html = generateRecoverTemplate(data.userName, data.token)
+      const send = await transporter.sendMail({
+        from: `"FlixNext" <${process.env.EMAIL_USER}>`,
+        to: data.userEmail,
+        subject: "Redefinição de Senha - FLIXNEXT",
+        html
+      })
+      return send
+    } catch (err) {
+      throw new Error("Erro ao enviar email de recuperação de senha")
     }
   }
 }
