@@ -37,9 +37,9 @@ export class AppController {
   async sendPromotionalEmail() {
     return this.appService.sendPromotionalEmail()
   }
-  //Emails de solicitações de filmes e séries
+  //Emails de solicitações de conteudo
   @Post('/request')
-  @ApiOperation({ summary: 'Envio de Solicitações de filmes e séries' })
+  @ApiOperation({ summary: 'Envio de Solicitações de conteúdo' })
   async sendRequest(@Body() data: RequestDTO) {
     return this.appService.sendRequestEmail(data)
   }
