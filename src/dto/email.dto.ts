@@ -10,6 +10,27 @@ export class NewUserDTO {
     @IsString()
     password: string;
 }
+export class NewUserAccountDTO {
+    @IsString()
+    name: string;
+    @IsString()
+    email: string;
+    @IsString()
+    activateLink: string;
+    @IsString()
+    qrCode: string;
+}
+
+export class ActivateConfirmationDTO {
+    @IsString()
+    name: string
+    @IsString()
+    loginLink: string
+    @IsString()
+    qrCode: string
+    @IsString()
+    email: string
+}
 
 export class ProblemNotificationDTO {
     @IsString()
@@ -40,8 +61,9 @@ export class RequestDTO {
     @IsString()
     title: string
 
+    @IsOptional()
     @IsString()
-    subtitle: string
+    subtitle?: string
 
     @IsString()
     userId: string

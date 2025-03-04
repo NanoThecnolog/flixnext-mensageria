@@ -1,7 +1,7 @@
-import { NewAccountProps, ProblemTemplateProps, RequestProps } from '@types';
+import { ActivatedAccProps, NewAccountProps, ProblemTemplateProps, RequestProps } from '@types';
 import mjml2html from 'mjml';
 
-
+export const webLink = process.env.WEBSITE_LINK
 
 export function generateEmailTest(str: string) {
   const mjmlTemplate = `
@@ -18,7 +18,7 @@ export function generateEmailTest(str: string) {
       <mj-column>
         <mj-text>Olá, este é um e-mail de teste!</mj-text>
         <mj-text>String enviada: ${str}</mj-text>
-        <mj-button href="https://flixnext.netlify.app" background-color="#007bff">Clique aqui</mj-button>
+        <mj-button href=${webLink} background-color="#007bff">Clique aqui</mj-button>
       </mj-column>
     </mj-section>
   </mj-body>
@@ -59,7 +59,7 @@ export function generateEmailContent(userName: string): string {
         <mj-text font-size="20px" color="#ffffff" font-family="Arial, sans-serif">
           Nosso novo link de acesso:
         </mj-text>
-        <mj-button href="https://flixnext.netlify.app" background-color="#f44336" color="#ffffff" font-size="18px" font-weight="700" padding="15px 30px">
+        <mj-button href=${webLink} background-color="#f44336" color="#ffffff" font-size="18px" font-weight="700" padding="15px 30px">
           flixnext.netlify.app
         </mj-button>
         <mj-text font-size="20px" color="#d3d3d3" font-family="Arial, sans-serif" >
@@ -72,12 +72,12 @@ export function generateEmailContent(userName: string): string {
       <mj-column>
         <mj-text font-size="14px" color="#ccc" font-family="Arial, sans-serif">
           <strong>Contribua para o nosso trabalho, faça uma doação para o nosso site.</strong> Acesse a página de doações da nossa plataforma para mais informações: 
-          <a href="https://flixnext.netlify.app/donate" style="color: #ffffff; text-decoration: none; font-weight: 700;">página de doação</a>
+          <a href="${webLink}/donate" style="color: #ffffff; text-decoration: none; font-weight: 700;">página de doação</a>
         </mj-text>
         <mj-text font-size="14px" color="#ccc" font-family="Arial, sans-serif">
           A FlixNext envia e-mails informativos sobre filmes e séries que possam lhe interessar. 
           Se você não quiser mais receber nossos emails, modifique as configurações da sua conta
-          <a href="https://flixnext.netlify.app/me" target="_blank" style="color: #f44336; text-decoration: none;">aqui</a>.
+          <a href="${webLink}/me" target="_blank" style="color: #f44336; text-decoration: none;">aqui</a>.
         </mj-text>
         <mj-text font-size="14px" color="#ccc" font-family="Arial, sans-serif">
           Este e-mail foi enviado de uma conta que apenas envia notificações e não pode receber respostas. Por favor não responda.
@@ -94,6 +94,80 @@ export function generateEmailContent(userName: string): string {
   if (errors.length > 0) {
     console.error("Erro ao compilar o template MJML:", errors);
     throw new Error("Erro ao gerar o template de email.")
+  }
+  return html;
+}
+
+export function generateNewAccUserNotify(name, activateLink, qrCode) {
+  const mjmlTemplate = `
+  <mjml>
+  <mj-head>
+    <mj-preview>Obrigado por criar sua conta na FlixNext!</mj-preview>
+  </mj-head>
+  <mj-body background-color="#f4f4f4">
+    
+    <mj-section background-color="#007bff">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-family="Arial, sans-serif">
+          Obrigado por criar sua conta na FlixNext!
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" border-radius="8px" padding="20px">
+      <mj-column>
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Olá, ${name}!
+        </mj-text>
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Sua conta na nossa plataforma foi criada com sucesso!
+        </mj-text>
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Para completar seu cadastro, <a href="${activateLink}" style="color: #007bff; text-decoration: none;">clique aqui</a> e ative sua conta.
+        </mj-text>
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Caso não esteja conseguindo clicar no link, copie e cole esse endereço no navegador:
+        </mj-text>
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif" color="#007bff">
+          ${activateLink}
+        </mj-text>
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Torne-se um apoiador! Faça uma doação para o projeto. Utilize o QRCode abaixo.
+        </mj-text>
+
+        <mj-image width="150px" src="${qrCode}" alt="QrCode Pix" />
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Caso queira doar um valor diferente, faça um pix utilizando a chave aleatória: 
+          <strong>69d28ddb-5447-44ec-997a-71be04038409</strong>
+        </mj-text>
+
+        <mj-text font-size="16px" font-family="Arial, sans-serif">
+          Atenciosamente,<br/>Equipe FlixNext
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#f8f8f8">
+      <mj-column>
+        <mj-text align="center" font-size="12px" color="#666" font-family="Arial, sans-serif">
+          Este é um email automático, por favor, não responda.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>
+  `
+  const { html, errors } = mjml2html(mjmlTemplate);
+  if (errors.length > 0) {
+    console.error("Erro ao compilar o template MJML:", errors);
+    throw new Error("Erro ao gerar o template de email para novo user.")
   }
   return html;
 }
@@ -153,47 +227,92 @@ export function generateNewAccNotificationContent({ name, email, birthday, passw
   return html;
 }
 
+export function generateActivatedConfirmation({ name, loginLink, qrCode }: ActivatedAccProps) {
+  const mjmlTemplate = `
+  <mjml>
+  <mj-body>
+    <mj-section background-color="#242424">
+      <mj-column>
+        <mj-text font-family="Arial, sans-serif" padding="20px" background-color="#007bff" color="#ffffff" font-size="24px" align="center">
+          Obrigado por Ativar sua conta na FlixNext!
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="20px">
+          Olá, ${name}!
+        </mj-text>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="20px">
+          Sua conta na FlixNext foi ativada com sucesso!
+        </mj-text>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="10px">
+          Agora você pode fazer login e assistir aos seus filmes e séries favoritos! <a href="${loginLink}">Clique aqui!</a>
+        </mj-text>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="10px">
+          Caso não esteja conseguindo clicar no link, copie e cole esse endereço no navegador:
+        </mj-text>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="10px">
+          ${loginLink}
+        </mj-text>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="20px">
+          Torne-se um apoiador! Faça uma doação para o projeto. Utilize o QRCode abaixo.
+        </mj-text>
+        <mj-image width="150px" src="${qrCode}" alt="QrCode Pix" padding="10px" align="center"/>
+        <mj-text font-family="Arial, sans-serif" font-size="16px" padding-bottom="20px">
+          Caso queira doar um valor diferente, faça um pix utilizando a chave aleatória: 69d28ddb-5447-44ec-997a-71be04038409
+        </mj-text>
+        <mj-text font-family="Arial, sans-serif" font-size="16px">
+          Atenciosamente,<br/>Equipe FlixNext
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#f8f8f8">
+      <mj-column>
+        <mj-text font-family="Arial, sans-serif" font-size="12px" color="#666" align="center">
+          Este é um email automático, por favor, não responda.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+`
+  const { html, errors } = mjml2html(mjmlTemplate);
+  if (errors.length > 0) {
+    console.error("Erro ao compilar o template MJML:", errors);
+    throw new Error("Erro ao gerar o template de email.")
+  }
+  return html;
+}
+
 export function generateProblemTemplate({ title, description, tmdbId, season, episode, userId }: ProblemTemplateProps) {
   const mjmlTemplate = `
   <mjml>
   <mj-head>
     <mj-preview>Notificação de Problema</mj-preview>
-    <mj-style inline="inline">
-      h4 {
-        font-size: 16px;
-        color: #4CAF50;
-      }
-      p {
-        font-size: 14px;
-        margin-bottom: 15px;
-      }
-      .footer p {
-        font-size: 12px;
-        color: #777;
-        text-align: center;
-      }
-    </mj-style>
   </mj-head>
-  <mj-body background-color="#f4f4f4">
-    <mj-section background-color="#ffffff" padding="20px" border-radius="8px" box-shadow="0 4px 8px rgba(0, 0, 0, 0.1)">
+  <mj-body background-color="#2b2b2b">
+    <mj-section background-color="#242424" padding="20px" border-radius="8px">
       <mj-column>
-        <mj-text align="center" font-size="20px" color="#ffffff" background-color="#4CAF50" padding="10px" border-radius="8px 8px 0 0">
+        <mj-text align="center" font-size="20px" color="#ffffff" background-color="#4CAF50" padding="10px">
           Notificação de Problema
         </mj-text>
-        <mj-text font-size="16px" color="#4CAF50">Problema:</mj-text>
-        <mj-text font-size="14px">${title}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50">Descrição:</mj-text>
-        <mj-text font-size="14px">${description}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50">Id do título:</mj-text>
-        <mj-text font-size="14px">${tmdbId}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50">Temporada:</mj-text>
-        <mj-text font-size="14px">${season ? season : 'não é uma série'}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50">Episódio:</mj-text>
-        <mj-text font-size="14px">${episode ? episode : 'não é uma série'}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50">ID do usuário:</mj-text>
-        <mj-text font-size="14px">${userId}</mj-text>
+        <mj-text font-size="16px" color="#ffffff">Problema:</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${title}</mj-text>
+        <mj-text font-size="16px" color="#ffffff">Descrição:</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${description}</mj-text>
+        <mj-text font-size="16px" color="#ffffff">Id do título:</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${tmdbId}</mj-text>
+        <mj-text font-size="16px" color="#ffffff">Temporada:</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${season ? season : 'não é uma série'}</mj-text>
+        <mj-text font-size="16px" color="#ffffff">Episódio:</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${episode ? episode : 'não é uma série'}</mj-text>
+        <mj-text font-size="16px" color="#ffffff">ID do usuário:</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${userId}</mj-text>
         <mj-divider border-color="#dddddd" />
-        <mj-text class="footer">Este é um email gerado automaticamente. Por favor, não responda.</mj-text>
+        <mj-text color="#ffffff">Este é um email gerado automaticamente. Por favor, não responda.</mj-text>
       </mj-column>
     </mj-section>
   </mj-body>
@@ -236,28 +355,28 @@ export function generatePromotionalTemplate(name: string) {
     <mj-section>
       <mj-column>
         <mj-text font-size="20px" font-weight="bold" color="#d3d3d3">Novidades em Séries:</mj-text>
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/sgCHdBJ1w0vJNUrW1Sq90KEXv9j.jpg" href="https://flixnext.netlify.app/series/serie/85271" />
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/d09X5AzxBq4GkHL6j8pmkDPySfA.jpg" href="https://flixnext.netlify.app/series/serie/95396" />
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/kWllPMxt5pbtW4Rx0XbgbhcYGmP.jpg" href="https://flixnext.netlify.app/series/serie/118906" />
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/fJQhUBShLBPSKNzcGg1tf0kHMyo.jpg" href="https://flixnext.netlify.app/series/serie/241259" />
-        <mj-button background-color="#921d1d" href="https://flixnext.netlify.app/series">Assista Agora</mj-button>
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/sgCHdBJ1w0vJNUrW1Sq90KEXv9j.jpg" href="${webLink}/series/serie/85271" />
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/d09X5AzxBq4GkHL6j8pmkDPySfA.jpg" href="${webLink}/series/serie/95396" />
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/kWllPMxt5pbtW4Rx0XbgbhcYGmP.jpg" href="${webLink}/series/serie/118906" />
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/fJQhUBShLBPSKNzcGg1tf0kHMyo.jpg" href="${webLink}/series/serie/241259" />
+        <mj-button background-color="#921d1d" href="${webLink}/series">Assista Agora</mj-button>
       </mj-column>
     </mj-section>
     
     <mj-section>
       <mj-column>
         <mj-text font-size="20px" font-weight="bold" color="#d3d3d3">Novidades em Filmes:</mj-text>
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/bYGXiAHUQqSp8SW3ql2lleZxQ5n.jpg" href="https://flixnext.netlify.app/watch/1156593" />
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/342bly9MqveL65TnEFzx8TTUxcL.jpg" href="https://flixnext.netlify.app/watch/558449" />
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/zX2UeAmF8XDBJM3sZ0RS0jLQ8Gg.jpg" href="https://flixnext.netlify.app/watch/845781" />
-        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" href="https://flixnext.netlify.app/watch/533535" />
-        <mj-button background-color="#921d1d" href="https://flixnext.netlify.app/#filmes">Assista Agora</mj-button>
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/bYGXiAHUQqSp8SW3ql2lleZxQ5n.jpg" href="${webLink}/watch/1156593" />
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/342bly9MqveL65TnEFzx8TTUxcL.jpg" href="${webLink}/watch/558449" />
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/zX2UeAmF8XDBJM3sZ0RS0jLQ8Gg.jpg" href="${webLink}/watch/845781" />
+        <mj-image width="150px" border-radius="16px" src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" href="${webLink}/watch/533535" />
+        <mj-button background-color="#921d1d" href="${webLink}/#filmes">Assista Agora</mj-button>
       </mj-column>
     </mj-section>
     
     <mj-section background-color="#101010" padding="20px">
       <mj-column>
-        <mj-text color="#ccc" font-size="14px" align="center">A FlixNext envia e-mails informativos sobre filmes e séries que possam lhe interessar. Se você não quiser mais receber nossos emails, modifique as configurações da sua conta <a href="https://flixnext.netlify.app/me">aqui</a>.</mj-text>
+        <mj-text color="#ccc" font-size="14px" align="center">A FlixNext envia e-mails informativos sobre filmes e séries que possam lhe interessar. Se você não quiser mais receber nossos emails, modifique as configurações da sua conta <a href="${webLink}/me">aqui</a>.</mj-text>
         <mj-text color="#ccc" font-size="14px" align="center">Este e-mail foi enviado de uma conta que apenas envia notificações e não pode receber respostas. Por favor, não responda.</mj-text>
         <mj-text color="#ccc" font-size="14px" align="center">©2025 FlixNext</mj-text>
       </mj-column>
@@ -278,50 +397,30 @@ export function generateRequestTemplate(data: RequestProps) {
   <mjml>
   <mj-head>
     <mj-preview>Solicitação de Conteúdo</mj-preview>
-    <mj-style inline="inline">
-      .container {
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .header {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px;
-        border-radius: 8px 8px 0 0;
-        text-align: center;
-      }
-      .footer {
-        font-size: 12px;
-        color: #777;
-        text-align: center;
-        margin-top: 20px;
-      }
-    </mj-style>
   </mj-head>
-  <mj-body background-color="#f4f4f4">
+  <mj-body background-color="#2b2b2b">
     <mj-section>
       <mj-column>
-        <mj-text align="center" font-size="22px" color="#4CAF50" font-family="Arial">Solicitação de Conteúdo</mj-text>
+        <mj-text align="center" font-size="22px" color="#fff" font-family="Arial">Solicitação de Conteúdo</mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#ffffff" border-radius="8px" padding="20px">
+    <mj-section background-color="#242424" border-radius="8px" padding="20px">
       <mj-column>
-        <mj-text font-size="16px" color="#4CAF50" font-family="Arial">TMDBID:</mj-text>
-        <mj-text font-size="14px" font-family="Arial" color="#333">${data.tmdbId}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50" font-family="Arial">Título:</mj-text>
-        <mj-text font-size="14px" font-family="Arial" color="#333">${data.title}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50" font-family="Arial">SubTítulo:</mj-text>
-        <mj-text font-size="14px" font-family="Arial" color="#333">${data.subtitle}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50" font-family="Arial">ID do Usuário:</mj-text>
-        <mj-text font-size="14px" font-family="Arial" color="#333">${data.userId}</mj-text>
-        <mj-text font-size="16px" color="#4CAF50" font-family="Arial">Nome do Usuário:</mj-text>
-        <mj-text font-size="14px" font-family="Arial" color="#333">${data.userName}</mj-text>
+        <mj-text font-size="16px" color="#fff" font-family="Arial">TMDBID:</mj-text>
+        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.tmdbId}</mj-text>
+        <mj-text font-size="16px" color="#fff" font-family="Arial">Título:</mj-text>
+        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.title}</mj-text>
+        <mj-text font-size="16px" color="#fff" font-family="Arial">SubTítulo:</mj-text>
+        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.subtitle ?? "-"}</mj-text>
+        <mj-text font-size="16px" color="#fff" font-family="Arial">ID do Usuário:</mj-text>
+        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.userId}</mj-text>
+        <mj-text font-size="16px" color="#fff" font-family="Arial">Nome do Usuário:</mj-text>
+        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.userName}</mj-text>
       </mj-column>
     </mj-section>
     <mj-section>
       <mj-column>
-        <mj-text font-size="12px" color="#777" align="center">
+        <mj-text font-size="12px" color="#999" align="center">
           Este é um email gerado automaticamente. Por favor, não responda.
         </mj-text>
       </mj-column>
@@ -377,6 +476,71 @@ export function generateRecoverTemplate(userName: string, token: string) {
   if (errors.length > 0) {
     console.error("Erro ao compilar o template MJML:", errors);
     throw new Error("Erro ao gerar o template promocional.")
+  }
+  return html;
+}
+export function generateEmailInfo(userName: string): string {
+  const mjmlTemplate = `
+    <mjml>
+  <mj-head>
+    <mj-preview>A nossa plataforma mudou de endereço!</mj-preview>
+    <mj-title>FlixNext - Mudança de Endereço</mj-title>
+  </mj-head>
+  <mj-body background-color="#121212">
+    <mj-section background-color="#1f1f1f" padding="20px">
+      <mj-column>
+        <mj-text align="center" font-size="34px" color="#ffffff" font-family="Arial, sans-serif">
+          A nossa plataforma mudou de endereço!
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#101010" border-radius="8px" padding="20px" css-class="box-shadow">
+      <mj-column>
+        <mj-text font-size="24px" color="#ffffff" font-family="Arial, sans-serif" font-weight="700" >
+          Olá, <strong>${userName}</strong>!
+        </mj-text>
+        <mj-text font-size="20px" color="#d3d3d3" font-family="Arial, sans-serif" line-height="1.5" >
+          Buscando melhorar a performance da plataforma, passamos por um processo de mudança de hospedagem e nosso site mudou.
+        </mj-text>
+        <mj-text font-size="20px" color="#ffffff" font-family="Arial, sans-serif">
+          Nosso novo link de acesso:
+        </mj-text>
+        <mj-button href="${webLink}" background-color="#f44336" color="#ffffff" font-size="18px" font-weight="700" padding="15px 30px">
+          flixnext.netlify.app
+        </mj-button>
+        <mj-text font-size="20px" color="#d3d3d3" font-family="Arial, sans-serif" >
+          Lembrando que esse é um link temporário. Em breve revelaremos o definitivo.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="14px" color="#ccc" font-family="Arial, sans-serif">
+          <strong>Contribua para o nosso trabalho, faça uma doação para o nosso site.</strong> Acesse a página de doações da nossa plataforma para mais informações: 
+          <a href="${webLink}/donate" style="color: #ffffff; text-decoration: none; font-weight: 700;">página de doação</a>
+        </mj-text>
+        <mj-text font-size="14px" color="#ccc" font-family="Arial, sans-serif">
+          A FlixNext envia e-mails informativos sobre filmes e séries que possam lhe interessar. 
+          Se você não quiser mais receber nossos emails, modifique as configurações da sua conta
+          <a href="https://flixnext.vercel.app/me" target="_blank" style="color: #f44336; text-decoration: none;">aqui</a>.
+        </mj-text>
+        <mj-text font-size="14px" color="#ccc" font-family="Arial, sans-serif">
+          Este e-mail foi enviado de uma conta que apenas envia notificações e não pode receber respostas. Por favor não responda.
+        </mj-text>
+        <mj-text align="center" font-size="14px" color="#ccc" font-family="Arial, sans-serif">
+          ©2025 FlixNext
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+`;
+  const { html, errors } = mjml2html(mjmlTemplate);
+  if (errors.length > 0) {
+    console.error("Erro ao compilar o template MJML:", errors);
+    throw new Error("Erro ao gerar o template de email.")
   }
   return html;
 }

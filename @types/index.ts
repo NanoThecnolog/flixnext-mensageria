@@ -4,6 +4,19 @@ export interface NewAccountProps {
     birthday: Date,
     password: string
 }
+export interface NewAccountUserProps {
+    name: string,
+    email: string,
+    activateLink: string,
+    qrCode: string,
+}
+
+export interface ActivatedAccProps {
+    name: string,
+    loginLink: string,
+    qrCode: string,
+    email: string
+}
 
 export interface ProblemTemplateProps {
     title: string,
@@ -17,7 +30,7 @@ export interface ProblemTemplateProps {
 export interface RequestProps {
     tmdbId: number,
     title: string,
-    subtitle: string,
+    subtitle?: string,
     userId: string,
     userName: string
 }
@@ -27,7 +40,7 @@ export interface UsersProps {
     id: string,
     name: string,
     email: string,
-    birthday: string,
+    birthday: Date,
     news: boolean,
     verified: boolean,
 }

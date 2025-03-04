@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { NewUserDTO, ProblemNotificationDTO, RecoverDTO, RequestDTO } from './dto/email.dto';
+import { ActivateConfirmationDTO, NewUserAccountDTO, NewUserDTO, ProblemNotificationDTO, RecoverDTO, RequestDTO } from './dto/email.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller()
@@ -19,17 +19,33 @@ export class AppController {
   }
 
   //Notificação de usuário novo
-  @Post('/notification/new/user')
-  @ApiOperation({ summary: 'Notificação de novo usuário' })
+  @Post('/system/new/user')
+  @ApiOperation({ summary: 'Notificação para o sistema de novo usuário' })
   async sendNewAccountNotification(@Body() user: NewUserDTO) {
     return this.appService.sendNewAccountNotification(user)
   }
+  //Email de notificação de conta criada para o usuário
+  @Post('/user/new')
+  @ApiOperation({ summary: 'Notificação para usuário de nova conta' })
+  async sendNewAccountUserNotification(@Body() data: NewUserAccountDTO) {
+    return this.appService.sendNewAccountUserNotification(data)
+  }
+  //Email de confirmação de ativação de conta
+  @Post('/user/confirmation')
+  async sendActivateConfirmation(@Body() data: ActivateConfirmationDTO) {
+    return this.appService.sendActivateConfirmation(data)
+  }
 
   //Notificação de problemas
-  @Post('/notification/problem')
-  @ApiOperation({ summary: 'Notificação de problema com arquivos' })
+  @Post('/system/problem')
+  @ApiOperation({ summary: 'Notificação para o sistema sobre problema com arquivos' })
   async sendProblemNotification(@Body() data: ProblemNotificationDTO) {
     return this.appService.sendProblemNotification(data)
+  }
+  @Post('/info')
+  @ApiOperation({ summary: 'Email informativo do sistema' })
+  async sendInfoEmail() {
+    return this.appService.sendInfoEmail()
   }
   //Emails promocionais
   @Post('/promotional/send')
@@ -38,7 +54,7 @@ export class AppController {
     return this.appService.sendPromotionalEmail()
   }
   //Emails de solicitações de conteudo
-  @Post('/request')
+  @Post('/system/request')
   @ApiOperation({ summary: 'Envio de Solicitações de conteúdo' })
   async sendRequest(@Body() data: RequestDTO) {
     return this.appService.sendRequestEmail(data)

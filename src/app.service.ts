@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
-import { NewAccountProps, ProblemTemplateProps, RecoverProps, RequestProps } from '@types';
+import { PrismaClient } from '@prisma/client';
+import { ActivatedAccProps, NewAccountProps, NewAccountUserProps, ProblemTemplateProps, RecoverProps, RequestProps } from '@types';
 import { createTransporter } from 'util/CreateTransporter';
-import { generateEmailTest, generateNewAccNotificationContent, generateProblemTemplate, generatePromotionalTemplate, generateRecoverTemplate, generateRequestTemplate } from 'util/GenerateEmailTemplates';
+import { generateActivatedConfirmation, generateEmailInfo, generateEmailTest, generateNewAccNotificationContent, generateNewAccUserNotify, generateProblemTemplate, generatePromotionalTemplate, generateRecoverTemplate, generateRequestTemplate } from 'util/GenerateEmailTemplates';
 import { getAllUsers } from 'util/GetDB';
 
 
@@ -36,6 +36,24 @@ export class AppService {
       throw new Error(`Erro ao enviar email teste: ${err}`)
     }
   }
+
+  async sendNewAccountUserNotification(data: NewAccountUserProps) {
+    try {
+      const html = generateNewAccUserNotify(data.name, data.activateLink, data.qrCode)
+      const sendEmail = await transporter.sendMail({
+        from: `'FlixNext'<${process.env.EMAIL_USER}>`,
+        to: data.email,
+        subject: "Incrível! Sua conta na FlixNext foi criada!",
+        text: `Olá, ${data.name}! Obrigado por criar uma conta na plataforma FlixNext! Por favor, clique no link para ativar sua conta: ${data.activateLink}. Esse é um email automático. Por favor, não responda.`,
+        html
+      })
+      return sendEmail
+    } catch (err) {
+      throw new Error("Erro ao enviar email de nova conta para o usuário.")
+    }
+  }
+
+
   async sendNewAccountNotification({ name, email, birthday, password }: NewAccountProps) {
     try {
       const html = generateNewAccNotificationContent({ name, email, birthday, password })
@@ -48,6 +66,21 @@ export class AppService {
       return sendEmail
     } catch (err) {
       throw new Error("Erro ao enviar email de Notificação")
+    }
+  }
+
+  async sendActivateConfirmation(data: ActivatedAccProps) {
+    try {
+      const html = generateActivatedConfirmation(data)
+      const sendEmail = await transporter.sendMail({
+        from: `'FlixNext'<${process.env.EMAIL_USER}>`,
+        to: data.email,
+        subject: "Conta Ativada com Sucesso!",
+        html: html
+      })
+      return sendEmail
+    } catch (err) {
+      throw new Error("Erro ao enviar email de confimação de ativação")
     }
   }
 
@@ -66,11 +99,51 @@ export class AppService {
     }
   }
 
+  async sendInfoEmail() {
+    const users = await getAllUsers()
+    const assunto = "Informativo FlixNext"
+    const { default: pLimit } = await import('p-limit');
+    const limit = pLimit(5)
+
+    try {
+      const emailPromises = users.map(async (user) => {
+        limit(async () => {
+          try {
+            if (user.news) {
+              const html = generateEmailInfo(user.name)
+              const send = await transporter.sendMail({
+                from: `'FlixNext'<${process.env.EMAIL_USER}>`,
+                to: user.email,
+                subject: assunto,
+                html
+              })
+              console.log(`Email enviado para ${user.email}`)
+              return { email: user.email, status: "success", response: send.response }
+            }
+          } catch (err) {
+            console.error(`Erro ao enviar email para ${user.email}:`, err)
+            return { email: user.email, status: "error", error: err.message }
+          }
+        })
+
+      })
+      const results = await Promise.allSettled(emailPromises)
+
+      const errors = results.filter(r => r.status === 'rejected')
+      if (errors.length > 0) {
+        console.warn(`${errors.length} emails falharam ao serem enviados`)
+      }
+      return "Emails enviados"
+    } catch (err) {
+      console.error("Erro ao processar o envio de emails:", err);
+      throw new Error("Erro ao enviar email promocional")
+    }
+  }
+
   async sendPromotionalEmail() {
     const users = await getAllUsers()
     const assunto = "Muita Novidade e Diversão para o seu 2025!"
-
-    const pLimit = (await import('p-limit')).default;
+    const { default: pLimit } = await import('p-limit');
     const limit = pLimit(5)
 
     try {
@@ -93,7 +166,6 @@ export class AppService {
             return { email: user.email, status: "error", error: err.message }
           }
         })
-
       })
       const results = await Promise.allSettled(emailPromises)
 
@@ -142,4 +214,5 @@ export class AppService {
       throw new Error("Erro ao enviar email de recuperação de senha")
     }
   }
+
 }
