@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { ActivatedAccProps, NewAccountProps, NewAccountUserProps, ProblemTemplateProps, RecoverProps, RequestProps } from '@types';
 import { createTransporter } from 'util/CreateTransporter';
@@ -21,23 +21,24 @@ export class AppService {
   }
   async sendEmailTest(str: string) {
     try {
-      //console.log("primeiro estágio")
       const html = generateEmailTest(str)
-      //console.log("segundo estágio", transporter)
       const sendEmail = await transporter.sendMail({
         from: `'FlixNext'<${process.env.EMAIL_USER}>`,
         to: "ericssongomes.fotografia@gmail.com",
         subject: "Email Teste",
         html: html
       })
-      //console.log("terceiro estágio")
       return sendEmail
     } catch (err) {
-      throw new Error(`Erro ao enviar email teste: ${err}`)
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+
+      throw new BadRequestException('Erro ao enviar email teste')
     }
   }
 
   async sendNewAccountUserNotification(data: NewAccountUserProps) {
+    if (!data) throw new BadRequestException("Informações não enviadas.")
     try {
       const html = generateNewAccUserNotify(data.name, data.activateLink, data.qrCode)
       const sendEmail = await transporter.sendMail({
@@ -49,12 +50,16 @@ export class AppService {
       })
       return sendEmail
     } catch (err) {
-      throw new Error("Erro ao enviar email de nova conta para o usuário.")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      console.log(err)
+      throw new InternalServerErrorException("Erro ao enviar email de nova conta para o usuário.")
     }
   }
 
 
   async sendNewAccountNotification({ name, email, birthday, password }: NewAccountProps) {
+
     try {
       const html = generateNewAccNotificationContent({ name, email, birthday, password })
       const sendEmail = await transporter.sendMail({
@@ -65,7 +70,10 @@ export class AppService {
       })
       return sendEmail
     } catch (err) {
-      throw new Error("Erro ao enviar email de Notificação")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+
+      throw new InternalServerErrorException("Erro ao enviar email de Notificação")
     }
   }
 
@@ -80,7 +88,9 @@ export class AppService {
       })
       return sendEmail
     } catch (err) {
-      throw new Error("Erro ao enviar email de confimação de ativação")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      throw new InternalServerErrorException("Erro ao enviar email de confimação de ativação")
     }
   }
 
@@ -95,7 +105,9 @@ export class AppService {
       })
       return sendEmail
     } catch (err) {
-      throw new Error("Erro ao enviar email de notificação de problema")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      throw new InternalServerErrorException("Erro ao enviar email de notificação de problema")
     }
   }
 
@@ -136,7 +148,9 @@ export class AppService {
       return "Emails enviados"
     } catch (err) {
       console.error("Erro ao processar o envio de emails:", err);
-      throw new Error("Erro ao enviar email promocional")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      throw new InternalServerErrorException("Erro ao enviar email promocional")
     }
   }
 
@@ -176,7 +190,9 @@ export class AppService {
       return "Emails enviados"
     } catch (err) {
       console.error("Erro ao processar o envio de emails:", err);
-      throw new Error("Erro ao enviar email promocional")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      throw new InternalServerErrorException("Erro ao enviar email promocional")
     }
   }
 
@@ -196,7 +212,9 @@ export class AppService {
       })
       return send
     } catch (err) {
-      throw new Error("Erro ao enviar email de Solicitação de conteúdo")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      throw new InternalServerErrorException("Erro ao enviar email de Solicitação de conteúdo")
     }
   }
 
@@ -211,7 +229,9 @@ export class AppService {
       })
       return send
     } catch (err) {
-      throw new Error("Erro ao enviar email de recuperação de senha")
+      if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+      if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+      throw new InternalServerErrorException("Erro ao enviar email de recuperação de senha")
     }
   }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ActivateConfirmationDTO, NewUserAccountDTO, NewUserDTO, ProblemNotificationDTO, RecoverDTO, RequestDTO } from './dto/email.dto';
 import { ApiOperation } from '@nestjs/swagger';

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ApiKeyGuard } from './auth/api-key.guard';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ResponseInterceptor } from './interceptors/exception.interceptor';
 
 
 async function bootstrap() {
@@ -20,6 +21,7 @@ async function bootstrap() {
   });
 
   app.useGlobalGuards(new ApiKeyGuard(configService));
+  app.useGlobalInterceptors(new ResponseInterceptor())
   const config = new DocumentBuilder()
     .setTitle('Mensageria FlixNext')
     .setDescription('API de envio de emails')
