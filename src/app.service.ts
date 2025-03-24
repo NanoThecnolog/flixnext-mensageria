@@ -1,16 +1,33 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, OnApplicationBootstrap } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { ActivatedAccProps, NewAccountProps, NewAccountUserProps, ProblemTemplateProps, RecoverProps, RequestProps } from '@types';
 import { createTransporter } from 'util/CreateTransporter';
 import { generateActivatedConfirmation, generateEmailInfo, generateEmailTest, generateNewAccNotificationContent, generateNewAccUserNotify, generateProblemTemplate, generatePromotionalTemplate, generateRecoverTemplate, generateRequestTemplate } from 'util/GenerateEmailTemplates';
 import { getAllUsers } from 'util/GetDB';
+import axios from 'axios'
 
 
 
 const transporter = createTransporter();
 
 @Injectable()
-export class AppService {
+export class AppService implements OnApplicationBootstrap {
+
+  onApplicationBootstrap() {
+    this.keepServerAwake()
+  }
+  private async keepServerAwake() {
+    const url = process.env.BACKEND_URL
+    if (!url) return console.log("url do backend não encontrada.")
+    setInterval(async () => {
+      try {
+        await axios.get(url)
+        console.log("Ping enviado.")
+      } catch (err) {
+        console.error("Erro ao enviar ping: ", err.message)
+      }
+    }, 60000)
+  }
 
   getActive() {
     return {
