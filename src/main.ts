@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ApiKeyGuard } from './auth/api-key.guard';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseInterceptor } from './interceptors/exception.interceptor';
-import { ValidationPipe } from '@nestjs/common';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 
 async function bootstrap() {
