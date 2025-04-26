@@ -456,7 +456,7 @@ export function generateRecoverTemplate(userName: string, token: string) {
         <mj-text font-size="16px" font-family="Arial">Segue o link para redefinir sua senha!</mj-text>
         <mj-text font-size="16px" font-family="Arial"><a href="${RecoverLink}">Clique aqui!</a></mj-text>
         <mj-text font-size="16px" font-family="Arial">Caso não esteja conseguindo clicar no link, copie e cole esse endereço no navegador:</mj-text>
-        <mj-text font-size="16px" font-family="Arial" word-break="break-all">${RecoverLink}</mj-text>
+        <mj-text font-size="16px" font-family="Arial">${RecoverLink}</mj-text>
         <mj-text font-size="16px" font-family="Arial">Torne-se um apoiador! Faça uma doação para o projeto. Utilize o QRCode abaixo.</mj-text>
         <mj-image width="150px" src="${qrCode}" alt="69d28ddb-5447-44ec-997a-71be04038409" padding="10px" />
         <mj-text font-size="16px" font-family="Arial">Caso queira doar um valor diferente ou não esteja visualizando o QRCode, faça um pix utilizando a chave-pix abaixo.</mj-text>
