@@ -11,23 +11,7 @@ import axios from 'axios'
 const transporter = createTransporter();
 
 @Injectable()
-export class AppService implements OnApplicationBootstrap {
-
-  onApplicationBootstrap() {
-    this.keepServerAwake()
-  }
-  private async keepServerAwake() {
-    const url = process.env.BACKEND_URL
-    if (!url) return console.log("url do backend não encontrada.")
-    setInterval(async () => {
-      try {
-        await axios.get(url)
-        console.log("Ping enviado.")
-      } catch (err) {
-        console.error("Erro ao enviar ping: ", err.message)
-      }
-    }, 60000)
-  }
+export class AppService {
 
   getActive() {
     return {
@@ -216,7 +200,7 @@ export class AppService implements OnApplicationBootstrap {
   async sendRequestEmail(data: RequestProps) {
     const prisma = new PrismaClient()
     const userExiste = await prisma.user.findUnique({
-      where: { id: data.userId }
+      where: { email: data.email }
     })
     if (!userExiste) throw new Error("Usuário não existe!")
     try {

@@ -24,14 +24,14 @@ export interface ProblemTemplateProps {
     tmdbId: number,
     season?: number,
     episode?: number,
-    userId: string
+    email: string
 }
 
 export interface RequestProps {
     tmdbId: number,
     title: string,
     subtitle?: string,
-    userId: string,
+    email: string,
     userName: string
 }
 

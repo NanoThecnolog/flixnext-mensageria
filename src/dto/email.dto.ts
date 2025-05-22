@@ -51,7 +51,7 @@ export class ProblemNotificationDTO {
     episode?: number
 
     @IsString()
-    userId: string
+    email: string
 }
 
 export class RequestDTO {
@@ -66,7 +66,7 @@ export class RequestDTO {
     subtitle?: string
 
     @IsString()
-    userId: string
+    email: string
 
     @IsString()
     userName: string

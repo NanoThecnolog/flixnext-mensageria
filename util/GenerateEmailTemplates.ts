@@ -287,7 +287,7 @@ export function generateActivatedConfirmation({ name, loginLink, qrCode }: Activ
   return html;
 }
 
-export function generateProblemTemplate({ title, description, tmdbId, season, episode, userId }: ProblemTemplateProps) {
+export function generateProblemTemplate({ title, description, tmdbId, season, episode, email }: ProblemTemplateProps) {
   const mjmlTemplate = `
   <mjml>
   <mj-head>
@@ -310,7 +310,7 @@ export function generateProblemTemplate({ title, description, tmdbId, season, ep
         <mj-text font-size="16px" color="#ffffff">Episódio:</mj-text>
         <mj-text font-size="14px" color="#ffffff">${episode ? episode : 'não é uma série'}</mj-text>
         <mj-text font-size="16px" color="#ffffff">ID do usuário:</mj-text>
-        <mj-text font-size="14px" color="#ffffff">${userId}</mj-text>
+        <mj-text font-size="14px" color="#ffffff">${email}</mj-text>
         <mj-divider border-color="#dddddd" />
         <mj-text color="#ffffff">Este é um email gerado automaticamente. Por favor, não responda.</mj-text>
       </mj-column>
@@ -413,7 +413,7 @@ export function generateRequestTemplate(data: RequestProps) {
         <mj-text font-size="16px" color="#fff" font-family="Arial">SubTítulo:</mj-text>
         <mj-text font-size="14px" font-family="Arial" color="#fff">${data.subtitle ?? "-"}</mj-text>
         <mj-text font-size="16px" color="#fff" font-family="Arial">ID do Usuário:</mj-text>
-        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.userId}</mj-text>
+        <mj-text font-size="14px" font-family="Arial" color="#fff">${data.email}</mj-text>
         <mj-text font-size="16px" color="#fff" font-family="Arial">Nome do Usuário:</mj-text>
         <mj-text font-size="14px" font-family="Arial" color="#fff">${data.userName}</mj-text>
       </mj-column>
