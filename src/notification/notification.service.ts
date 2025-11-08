@@ -11,7 +11,6 @@ export class NotificationService {
 
     async sendActivateConfirmation(data: ActivatedAccProps) {
         try {
-            console.log('tudo bem')
             const html = this.template.generateActivatedConfirmation(data)
             const to = data.email
             const subject = "Conta Ativada com Sucesso!"
