@@ -12,11 +12,14 @@ export class NewUserDTO {
 }
 export class NewUserAccountDTO {
     @IsString()
+    id: string
+
+    @IsString()
     name: string;
+
     @IsString()
     email: string;
-    @IsString()
-    activateLink: string;
+
     @IsString()
     qrCode: string;
 }
@@ -24,10 +27,10 @@ export class NewUserAccountDTO {
 export class ActivateConfirmationDTO {
     @IsString()
     name: string
-    @IsString()
-    loginLink: string
+
     @IsString()
     qrCode: string
+
     @IsString()
     email: string
 }

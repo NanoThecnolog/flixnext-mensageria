@@ -1,19 +1,20 @@
 export interface NewAccountProps {
+    id: string,
     name: string,
     email: string,
     birthday: Date,
-    password: string
+    password: string,
+    qrCode: string
 }
 export interface NewAccountUserProps {
+    id: string,
     name: string,
     email: string,
-    activateLink: string,
     qrCode: string,
 }
 
 export interface ActivatedAccProps {
     name: string,
-    loginLink: string,
     qrCode: string,
     email: string
 }
