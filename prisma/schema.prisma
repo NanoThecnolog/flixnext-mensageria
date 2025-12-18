@@ -18,26 +18,18 @@ model favorito {
   user       user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model movies {
-  id          String   @id
-  title       String
-  src         String
-  background  String
-  overlay     String
-  description String
-  duration    String
-  genero      String[]
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-  subtitle    String?
-}
-
 model subscription {
-  id     String @id
-  userId String @unique
-  subId  Int
-  status String
-  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String                @id
+  userId              String                @unique
+  subId               Int                   @unique
+  planId              String
+  startedAt           DateTime              @default(now())
+  status              String
+  plan                plan                  @relation(fields: [planId], references: [id])
+  user                user                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionHistory subscriptionHistory[]
+
+  @@index([status])
 }
 
 model user {
@@ -55,7 +47,11 @@ model user {
   resetTokenExpire DateTime?
   news             Boolean       @default(true)
   access           Boolean       @default(false)
+  cpf              String?       @unique
+  phone_number     String?
+  address          address?
   favorito         favorito[]
+  loginHistory     loginHistory?
   subscription     subscription?
   watchLater       watchLater[]
 }
@@ -69,4 +65,81 @@ model watchLater {
   updated_at DateTime @default(now())
   tmdbid     Int
   user       user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model address {
+  id           String  @id
+  street       String
+  number       String
+  neighborhood String
+  zipcode      String
+  city         String
+  complement   String?
+  state        String
+  userId       String  @unique
+  user         user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model loginHistory {
+  id         String   @id
+  userId     String   @unique
+  name       String
+  email      String
+  lastAccess DateTime @default(now())
+  user       user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model plan {
+  id           String         @id
+  name         String         @unique
+  price        Int
+  type         String
+  planId       Int            @unique
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now())
+  subscription subscription[]
+}
+
+model problem {
+  id          String   @id
+  title       String
+  description String
+  tmdbId      Int      @unique
+  season      Int?
+  episode     Int?
+  userId      String
+  status      String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+}
+
+model subscriptionHistory {
+  id             String       @id
+  subscriptionId String
+  fromStatus     String
+  toStatus       String
+  changedAt      DateTime     @default(now())
+  subscription   subscription @relation(fields: [subscriptionId], references: [id])
+}
+
+enum InvoiceStatus {
+  new
+  waiting
+  identified
+  approved
+  paid
+  unpaid
+  refunded
+  contested
+  canceled
+  settled
+  expired
+}
+
+enum SubscriptionStatus {
+  active
+  inactive
+  canceled
+  expired
+  trial
 }

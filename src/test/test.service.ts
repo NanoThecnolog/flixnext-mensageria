@@ -22,7 +22,7 @@ export class TestService {
     }
     async testTemplates() {
         try {
-            const html = this.template.generatePromotionalTemplate('teste')
+            const html = this.template.generateEmailInfoAboutSubscriptions('nome-teste')
             const to = "ericssongomes.fotografia@gmail.com"
             const subject = "Email de teste"
             return await this.mailService.sendMail(to, subject, html)

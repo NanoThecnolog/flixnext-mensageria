@@ -36,10 +36,10 @@ export class NotificationController {
     }
 
     //Emails promocionais
-    @Get('promotional')
+    @Post('promotional')
     @ApiOperation({ summary: 'Envio de emails promocionais' })
-    async sendPromotionalEmail() {
-        return this.notificationService.sendPromotionalEmail()
+    async sendPromotionalEmail(@Body() body: { series: { link: string; name: string; image: string }[], movies: { link: string; name: string; image: string }[] }) {
+        return this.notificationService.sendPromotionalEmail(body.series, body.movies)
     }
 
     //Emails de solicitações de conteudo
@@ -47,5 +47,10 @@ export class NotificationController {
     @ApiOperation({ summary: 'Envio de Solicitações de conteúdo' })
     async sendRequest(@Body() data: RequestDTO) {
         return this.notificationService.sendRequestEmail(data)
+    }
+
+    @Post('about-subscription')
+    async sendEmailAboutSubs() {
+        return this.notificationService.sendEmailAboutSubscription()
     }
 }

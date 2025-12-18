@@ -12,7 +12,7 @@ export class TestController {
     async sendEmailTeste(@Body('str') str: string) {
         return this.testService.sendEmailTest(str)
     }
-    @Get('templates')
+    @Post('templates')
     async testingTemplates() {
         return this.testService.testTemplates()
     }

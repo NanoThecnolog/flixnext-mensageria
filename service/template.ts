@@ -334,11 +334,60 @@ export class Template {
         return html;
     }
 
-    generatePromotionalTemplate(name: string): string {
+    generatePromotionalTemplate(
+        name: string,
+        series: { link: string; name: string; image: string }[],
+        movies: { link: string; name: string; image: string }[],
+
+    ): string {
+        const chunk = <T>(arr: T[], size: number) =>
+            arr.reduce((acc, _, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]), [] as T[][])
+
+        const seriesBlocks = chunk(series, 2)
+            .map(block => `
+            <mj-section padding="5px">
+                ${block
+                    .map(
+                        item => `
+                        <mj-column padding="2px">
+                            <mj-image
+                                border-radius="16px"
+                                padding="2px"
+                                src="${item.image}"
+                                href="${item.link}"
+                                alt="${item.name}"
+                            />
+                        </mj-column>`
+                    )
+                    .join("")}
+            </mj-section>
+        `)
+            .join("")
+
+        const movieBlocks = chunk(movies, 2)
+            .map(block => `
+            <mj-section padding="5px">
+                ${block
+                    .map(
+                        item => `
+                        <mj-column padding="2px">
+                            <mj-image
+                                border-radius="16px"
+                                padding="2px"
+                                src="${item.image}"
+                                href="${item.link}"
+                                alt="${item.name}"
+                            />
+                        </mj-column>`
+                    )
+                    .join("")}
+            </mj-section>
+        `)
+            .join("")
         const mjmlTemplate = `
             <mjml>
             <mj-head>
-                <mj-preview>Novembro Azul 💙 Confira histórias inspiradoras sobre saúde e superação</mj-preview>
+                <mj-preview>Novembro Azul 💙 Conteúdos recomendados</mj-preview>
                 <mj-style inline="inline">
                 a { color: #1d69f8ff; text-decoration: none; }
                 </mj-style>
@@ -356,8 +405,7 @@ export class Template {
                 <mj-column>
                     <mj-text color="#d3d3d3" font-size="20px" font-weight="bold">Olá, <strong>${name}</strong>!</mj-text>
                     <mj-text color="#d3d3d3" font-size="18px" align="center">
-                    Novembro é o mês da conscientização sobre a saúde do homem. 💪  
-                    Para entrar no clima, selecionamos filmes e séries que inspiram reflexão, superação e um pouco de adrenalina.
+                    Aproveite as novidades da semana: filmes e séries recém-adicionados à plataforma, com histórias cheias de emoção, aventura e boas surpresas.
                     </mj-text>
                 </mj-column>
                 </mj-section>
@@ -368,23 +416,7 @@ export class Template {
                     </mj-column>
                 </mj-section>
 
-                <mj-section padding="5px">
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/hGwm9Cj3CdbJIqQWNExQqiYmCd4.jpg" href="${this.webLink}/series/serie/1396" />
-                    </mj-column>
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/tAJYUFaWot3jn5vtDUoxNNIw9aF.jpg" href="${this.webLink}/series/serie/136315" />
-                    </mj-column>
-                </mj-section>
-
-                <mj-section padding="5px">
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/c9JwFbaBWarL9fwo1NSqsiTj7Zh.jpg" href="${this.webLink}/series/serie/108978" />
-                    </mj-column>
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/29myVHhdGoS735ZJ9hblY0pQ3K9.jpg" href="${this.webLink}/series/serie/95557" />
-                    </mj-column>
-                </mj-section>
+                ${seriesBlocks}
 
                 <mj-section>
                     <mj-column>
@@ -398,23 +430,7 @@ export class Template {
                     </mj-column>
                 </mj-section>
 
-                <mj-section padding="5px">
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/mCICnh7QBH0gzYaTQChBDDVIKdm.jpg" href="${this.webLink}/movie/550" />
-                    </mj-column>
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/vHGC2sSh7pBWXY0qzMdPD7fcjzS.jpg" href="${this.webLink}/movie/1402" />
-                    </mj-column>
-                </mj-section>
-
-                <mj-section padding="5px">
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/bE6XutmB6tcvzTHBx4JGJLlzouM.jpg" href="${this.webLink}/movie/458156" />
-                    </mj-column>
-                    <mj-column padding="2px">
-                        <mj-image  border-radius="16px" padding="2px" src="https://image.tmdb.org/t/p/w500/t8L9dqNMclXJHP0TesPsPS2RvB1.jpg" href="${this.webLink}/movie/359724" />
-                    </mj-column>
-                </mj-section>
+                ${movieBlocks}
 
                 <mj-section>
                     <mj-column>
@@ -427,8 +443,7 @@ export class Template {
                 <mj-section background-color="#101010" padding="20px">
                 <mj-column>
                     <mj-text color="#ccc" font-size="16px" align="center">
-                    Lembre-se: cuidar da saúde é um ato de coragem.  
-                    Faça seus exames regularmente e incentive quem você ama a fazer o mesmo.
+                    Cuide da sua saúde. Consulte um médico, faça seus exames regularmente e incentive quem você ama a fazer o mesmo.
                     </mj-text>
                     <mj-text color="#ccc" font-size="14px" align="center">A FlixNext recomenda histórias que inspiram autoconhecimento e bem-estar. Se você não quiser mais receber nossos emails, modifique as configurações da sua conta <a href="${this.webLink}/me">aqui</a>.</mj-text>
                     <mj-text color="#ccc" font-size="14px" align="center">©2025 FlixNext - mensagens automáticas, não responda a este e-mail.</mj-text>
@@ -603,6 +618,100 @@ export class Template {
             </mj-body>
             </mjml>
             `;
+        const { html, errors } = mjml2html(mjmlTemplate);
+        if (errors.length > 0) {
+            console.error("Erro ao compilar o template MJML:", errors);
+            throw new Error("Erro ao gerar o template de email.")
+        }
+        return html;
+    }
+
+    generateEmailInfoAboutSubscriptions(name: string) {
+        const mjmlTemplate = `
+        <mjml>
+  <mj-head>
+    <mj-preview>Novo sistema de assinaturas!</mj-preview>
+    <mj-style inline="inline">
+      a { color: #1d69f8; text-decoration: none; }
+    </mj-style>
+  </mj-head>
+
+  <mj-body background-color="#121212">
+    <mj-section background-color="#1f1f1f" padding="20px">
+      <mj-column>
+        <mj-text align="center" color="#fff" font-size="24px" font-weight="bold">
+          Novo sistema de assinaturas
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#101010" border-radius="8px" padding="20px">
+      <mj-column>
+        <mj-text color="#d3d3d3" font-size="18px" font-weight="bold">
+          Olá, <strong>${name}</strong>!
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          Desde o início, a plataforma foi criada para ser simples, acessível e realmente útil. O crescimento constante de usuários mostra que estamos no caminho certo — e isso só é possível graças a você.
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          Com esse crescimento, os custos de infraestrutura, serviços e manutenção também aumentaram e hoje estão acima do que foi inicialmente previsto. Além disso, existe o trabalho contínuo de manter o sistema estável, seguro e em evolução.
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          Por isso, estamos implementando um <strong>sistema de assinaturas</strong> para garantir a sustentabilidade da plataforma a longo prazo.
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          A assinatura mensal será de <strong>R$ 10,99</strong>, com pagamento via <strong>Pix ou boleto</strong>. Esse valor é mais simbólico do que comercial: ele existe para ajudar a cobrir os custos operacionais e o trabalho de manutenção, não como uma forma de maximizar lucro.
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          Além disso, a assinatura ajuda a manter o sistema saudável, evitando a criação excessiva de contas ou múltiplas contas por um mesmo usuário.
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px" font-weight="bold">
+          Como funciona a partir de agora:
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          • Usuários atuais podem contratar a assinatura acessando o <a href="${this.webLink}/me">painel da conta</a><br />
+          • Novos usuários realizarão a contratação no momento da criação da conta.
+        </mj-text>
+
+        <mj-text color="#d3d3d3" font-size="16px">
+          Essa decisão foi tomada com muito cuidado e total transparência. Os usuários sempre foram — e continuarão sendo — a parte mais importante da plataforma.
+        </mj-text>
+        <mj-text color="#d3d3d3" font-size="16px">
+          O sistema de assinaturas vai entrar em vigor dia 17 de dezembro de 2025, em 3 dias! Até lá, o uso está liberado!
+        </mj-text>
+        <mj-text color="#d3d3d3" font-size="16px">
+          Caso venha ter algum problema ao criar sua assinatura, entre em contato conosco!
+        </mj-text>
+
+        <mj-button background-color="#1d69f8" href="${this.webLink}/me/escolher-plano">
+          Contratar assinatura
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#101010" padding="20px">
+      <mj-column>
+        <mj-text color="#ccc" font-size="14px" align="center">
+          Obrigado por fazer parte da plataforma e por apoiar a continuidade deste projeto.
+        </mj-text>
+        <mj-text color="#ccc" font-size="14px" align="center">
+          Se não quiser mais receber nossos e-mails, você pode ajustar as configurações da sua conta <a href="${this.webLink}/me">aqui</a>.
+        </mj-text>
+        <mj-text color="#ccc" font-size="14px" align="center">
+          ©2025 FlixNext – mensagem automática, não responda a este e-mail.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+        `
         const { html, errors } = mjml2html(mjmlTemplate);
         if (errors.length > 0) {
             console.error("Erro ao compilar o template MJML:", errors);

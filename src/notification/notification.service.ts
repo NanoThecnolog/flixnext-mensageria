@@ -107,7 +107,10 @@ export class NotificationService {
         }
     }
 
-    async sendPromotionalEmail() {
+    async sendPromotionalEmail(
+        series: { link: string; name: string; image: string }[],
+        movies: { link: string; name: string; image: string }[],
+    ) {
         const users = await getAllUsers()
         const { default: pLimit } = await import('p-limit');
         const limit = pLimit(5)
@@ -117,7 +120,7 @@ export class NotificationService {
                 limit(async () => {
                     try {
                         if (user.news) {
-                            const html = this.template.generatePromotionalTemplate(user.name)
+                            const html = this.template.generatePromotionalTemplate(user.name, series, movies)
                             const to = user.email
                             const subject = "Muita Novidade e Diversão para o seu 2025!"
                             const send = await this.mailService.sendMail(to, subject, html)
@@ -159,6 +162,55 @@ export class NotificationService {
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
             throw new InternalServerErrorException("Erro ao enviar email de Solicitação de conteúdo")
+        }
+    }
+    async sendEmailAboutSubscription() {
+        const users = await getAllUsers()
+        const { default: pLimit } = await import('p-limit');
+        const limit = pLimit(2)
+
+        try {
+            const tasks = users
+                .filter(user => user.news)
+                .map(user =>
+                    limit(async () => {
+                        try {
+                            const html = this.template.generateEmailInfoAboutSubscriptions(user.name)
+                            const to = user.email
+                            const subject = "Novo sistema de assinaturas – um passo importante para a continuidade da plataforma"
+                            await this.mailService.sendMail(to, subject, html)
+                            console.log(`Email enviado para ${user.email}`)
+                            return { email: user.email, status: 'success' }
+                        } catch (err) {
+                            console.error(`Erro ao enviar email para ${user.email}:`, err.message)
+
+                            // erro de rate limit SMTP → parar imediatamente
+                            if (err?.responseCode === 450 || err?.code === 'EAUTH') {
+                                throw err
+                            }
+
+                            return { email: user.email, status: 'error', error: err.message }
+                        }
+                    })
+                )
+
+            const results = await Promise.allSettled(tasks)
+
+            const failed = results.filter(r => r.status === 'rejected')
+            if (failed.length) {
+                console.warn(`${failed.length} emails falharam`)
+            }
+            return 'Processo de envio finalizado'
+        } catch (err) {
+            console.error("Erro crítico no envio de emails:", err);
+            if (err?.code === 'EAUTH') {
+                throw new InternalServerErrorException(
+                    'Servidor de email bloqueou temporariamente novas autenticações. Tente novamente mais tarde.'
+                )
+            }
+            if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+            if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+            throw new InternalServerErrorException("Erro ao enviar email promocional")
         }
     }
 }
