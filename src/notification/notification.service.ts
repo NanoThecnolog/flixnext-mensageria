@@ -47,6 +47,7 @@ export class NotificationService {
     }
     async sendNewAccountUserNotification(data: NewAccountUserProps) {
         if (!data) throw new BadRequestException("Informações não enviadas.")
+        console.log('ID recebido no service de notificação de conta criada!', data.id)
         try {
             const html = this.template.generateNewAccUserNotify(data)
             const subject = "Incrível! Sua conta na FlixNext foi criada!"
