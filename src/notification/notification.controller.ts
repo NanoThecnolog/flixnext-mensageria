@@ -35,6 +35,7 @@ export class NotificationController {
     @Public()
     @Post('access/paymentpage')
     async sendPaymentPageAcessNotification() {
+        console.log("enviando notificação de acesso a pagina de pagamentos")
         return this.notificationService.sendPaymentPageAcess()
     }
 

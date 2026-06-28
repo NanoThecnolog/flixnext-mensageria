@@ -73,7 +73,7 @@ export class NotificationService {
     async sendPaymentPageAcess() {
         try {
             const html = this.template.generatePaymentPageNotification()
-            const to = "ericssongomes.fotografia@gmail.com"
+            const to = "contato@ericssongomes.com"
             const send = await this.mailService.sendMail(to, "Notificação de acesso a pagina de pagamentos", html)
 
             return send
