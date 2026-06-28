@@ -26,7 +26,7 @@ export class NotificationService {
                 }
             ]
             return await this.mailService.sendMail(to, subject, html, undefined, attachments)
-        } catch (err) {
+        } catch (err: any) {
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
             throw new InternalServerErrorException("Erro ao enviar email de confimação de ativação")
@@ -39,7 +39,7 @@ export class NotificationService {
             const to = "ericssongomes.fotografia@gmail.com"
             const subject = "Notificação de problema com arquivo"
             return await this.mailService.sendMail(to, subject, html)
-        } catch (err) {
+        } catch (err: any) {
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
             throw new InternalServerErrorException("Erro ao enviar email de notificação de problema")
@@ -62,13 +62,30 @@ export class NotificationService {
                 }
             ]
             return await this.mailService.sendMail(data.email, subject, html, undefined, attachments)
-        } catch (err) {
+        } catch (err: any) {
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
             console.log(err)
             throw new InternalServerErrorException("Erro ao enviar email de nova conta para o usuário.")
         }
     }
+
+    async sendPaymentPageAcess() {
+        try {
+            const html = this.template.generatePaymentPageNotification()
+            const to = "ericssongomes.fotografia@gmail.com"
+            const send = await this.mailService.sendMail(to, "Notificação de acesso a pagina de pagamentos", html)
+
+            return send
+        } catch (err: any) {
+            if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
+            if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
+            console.log(err)
+            throw new InternalServerErrorException("Erro ao enviar notificação de acesso a pagina de pagamentos.")
+        }
+    }
+
+
     async sendInfoEmail() {
         const users = await getAllUsers()
         const { default: pLimit } = await import('p-limit');
@@ -86,7 +103,7 @@ export class NotificationService {
                             console.log(`Email enviado para ${user.email}`)
                             return { email: user.email, status: "success", response: send.response }
                         }
-                    } catch (err) {
+                    } catch (err: any) {
                         console.error(`Erro ao enviar email para ${user.email}:`, err)
                         return { email: user.email, status: "error", error: err.message }
                     }
@@ -100,7 +117,7 @@ export class NotificationService {
                 console.warn(`${errors.length} emails falharam ao serem enviados`)
             }
             return "Emails enviados"
-        } catch (err) {
+        } catch (err: any) {
             console.error("Erro ao processar o envio de emails:", err);
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
@@ -128,7 +145,7 @@ export class NotificationService {
                             console.log(`Email enviado para ${user.email}`)
                             return { email: user.email, status: "success", response: send.response }
                         }
-                    } catch (err) {
+                    } catch (err: any) {
                         console.error(`Erro ao enviar email para ${user.email}:`, err)
                         return { email: user.email, status: "error", error: err.message }
                     }
@@ -141,7 +158,7 @@ export class NotificationService {
                 console.warn(`${errors.length} emails falharam ao serem enviados`)
             }
             return "Emails enviados"
-        } catch (err) {
+        } catch (err: any) {
             console.error("Erro ao processar o envio de emails:", err);
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
@@ -159,7 +176,7 @@ export class NotificationService {
             const to = 'ericssongomes.fotografia@gmail.com'
             const subject = 'Solicitação de Conteúdo'
             return await this.mailService.sendMail(to, subject, html)
-        } catch (err) {
+        } catch (err: any) {
             if (err.code === "ECONNREFUSED") throw new InternalServerErrorException('Erro ao tentar conectar com o servidor de email')
             if (err.code === "INVALID_EMAIL") throw new BadRequestException('O email fornecido é inválido.')
             throw new InternalServerErrorException("Erro ao enviar email de Solicitação de conteúdo")
@@ -182,7 +199,7 @@ export class NotificationService {
                             await this.mailService.sendMail(to, subject, html)
                             console.log(`Email enviado para ${user.email}`)
                             return { email: user.email, status: 'success' }
-                        } catch (err) {
+                        } catch (err: any) {
                             console.error(`Erro ao enviar email para ${user.email}:`, err.message)
 
                             // erro de rate limit SMTP → parar imediatamente
@@ -202,7 +219,7 @@ export class NotificationService {
                 console.warn(`${failed.length} emails falharam`)
             }
             return 'Processo de envio finalizado'
-        } catch (err) {
+        } catch (err: any) {
             console.error("Erro crítico no envio de emails:", err);
             if (err?.code === 'EAUTH') {
                 throw new InternalServerErrorException(

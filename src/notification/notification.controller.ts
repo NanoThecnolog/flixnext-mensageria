@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ActivateConfirmationDTO, NewUserAccountDTO, ProblemNotificationDTO, RequestDTO } from 'src/dto/email.dto';
 import { NotificationService } from './notification.service';
 import { ApiOperation } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('notification')
 export class NotificationController {
@@ -28,6 +29,17 @@ export class NotificationController {
     async sendNewAccountUserNotification(@Body() data: NewUserAccountDTO) {
         return this.notificationService.sendNewAccountUserNotification(data)
     }
+
+
+
+    @Public()
+    @Post('access/paymentpage')
+    async sendPaymentPageAcessNotification() {
+        return this.notificationService.sendPaymentPageAcess()
+    }
+
+
+
 
     @ApiOperation({ summary: 'Email informativo do sistema' })
     @Get('info')

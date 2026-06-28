@@ -39,6 +39,34 @@ export class Template {
         return html;
     }
 
+    generatePaymentPageNotification(): string {
+        const mjmlTemplate = `
+            <mjml>
+            <mj-head>
+                <mj-preview>Notificação de acesso à pagina de pagamentos.</mj-preview>
+                <mj-style inline="inline">
+                .title { font-size: 24px; font-weight: bold; }
+                .content { font-size: 16px; color: #555; }
+                </mj-style>
+            </mj-head>
+            <mj-body>
+                <mj-section>
+                <mj-column>
+                    <mj-text>Olá, este é um e-mail automático!</mj-text>
+                    <mj-text>Acesso na página de pagamentos.</mj-text>
+                </mj-column>
+                </mj-section>
+            </mj-body>
+            </mjml>`
+
+        const { html, errors } = mjml2html(mjmlTemplate);
+        if (errors.length > 0) {
+            console.error("Erro ao compilar o template MJML:", errors);
+            throw new Error("Erro ao gerar o template promocional.")
+        }
+        return html;
+    }
+
     generateEmailContent(userName: string): string {
         const mjmlTemplate = `
                 <mjml>
